@@ -1,11 +1,15 @@
+#include <string.h>
+#include <math.h>
+
 #include "core.h"
 #include "base.h"
 
-// NOTE: temporary function
+// NOTE: a temporary function
 inline void DrawPixel(pixel_buffer *PixelBuffer, int X, int Y, u32 Color) {
   if (X < 0 || X > PixelBuffer->width || Y < 0 || Y > PixelBuffer->height) {
     return;
   }
+  Y = PixelBuffer->height - Y;
   u32 *pixel = (u32 *)PixelBuffer->memory + X + Y * PixelBuffer->width;
   *pixel = Color;
 }
@@ -21,7 +25,7 @@ struct v3f {
   r32 z;
 };
 
-// NOTE: temporary function
+// NOTE: a temporary function
 void DrawLine(pixel_buffer *PixelBuffer, v2i A, v2i B, u32 Color) {
   v2i left = A;
   v2i right = B;
@@ -32,6 +36,16 @@ void DrawLine(pixel_buffer *PixelBuffer, v2i A, v2i B, u32 Color) {
     while (y != B.y) {
       DrawPixel(PixelBuffer, A.x, y, Color);
       y += step;
+    }
+    return;
+  }
+
+  if (A.y == B.y) {
+    int step = (A.x < B.x) ? 1 : -1;
+    int x = A.x;
+    while (x != B.x) {
+      DrawPixel(PixelBuffer, x, A.y, Color);
+      x += step;
     }
     return;
   }
@@ -48,57 +62,52 @@ void DrawLine(pixel_buffer *PixelBuffer, v2i A, v2i B, u32 Color) {
   }
 }
 
+r32 func(r32 x) { return (r32)(12*sin(x) - 5 * cos(x)); }
+
 update_result UpdateAndRender(pixel_buffer *PixelBuffer) {
   update_result result = {};
 
-  // v2i A = {20, 30};
-  // v2i B = {PixelBuffer->width - 20, PixelBuffer->height - 30};
-  // DrawLine(PixelBuffer, A, B, 0x00FFFFFF);
+  // Clear screen
+  memset(PixelBuffer->memory, 0,
+         PixelBuffer->width * PixelBuffer->height * sizeof(u32));
 
-  // Unit cube
-  v3f points[] = {
-      {-0.5f, -0.5f, 2.5f},
-      {0.5f, -0.5f, 2.5f},
-      {0.5f, 0.5f, 2.5f},
-      {-0.5f, 0.5f, 2.5f},
-      {-0.5f, -0.5f, 3.5f},
-      {0.5f, -0.5f, 3.5f},
-      {0.5f, 0.5f, 3.5f},
-      {-0.5f, 0.5f, 3.5f},
-  };
+  int width = PixelBuffer->width;
+  int height = PixelBuffer->height;
 
-  v2i edges[] = {
-      {0, 1},
-      {1, 2},
-      {2, 3},
-      {3, 0},
-      {4, 5},
-      {5, 6},
-      {6, 7},
-      {7, 4},
-      {0, 4},
-      {1, 5},
-      {2, 6},
-      {3, 7},
-  };
+  // Draw the axis
+  DrawLine(PixelBuffer, {width / 2, 0}, {width / 2, height}, 0xFFFFFFFF);
+  DrawLine(PixelBuffer, {0, height / 2}, {width, height / 2}, 0xFFFFFFFF);
 
-  // Render
-  int scale = 300;
-  r32 z_depth = 0;
-  int x_shift = 10;
-  int y_shift = 10;
+  int unit_width = 20;
 
-  int edge_count = COUNT_OF(edges);
-  for (int i = 0; i < edge_count; i++) {
-    v2i edge = edges[i];
-    v3f point1 = points[edge.x];
-    v3f point2 = points[edge.y];
-    v2i A, B;
-    A.x = (int)(point1.x * scale / (point1.z + z_depth)) + x_shift;
-    A.y = (int)(point1.y * scale / (point1.z + z_depth)) + y_shift;
-    B.x = (int)(point2.x * scale / (point2.z + z_depth)) + x_shift;
-    B.y = (int)(point2.y * scale / (point2.z + z_depth)) + y_shift;
-    DrawLine(PixelBuffer, A, B, 0x00FFFFFF);
+  int min_x = (-width / 2) / unit_width;
+  int max_x = (width / 2) / unit_width;
+  for (int x = min_x; x <= max_x; x++) {
+    int actual_x = (x * unit_width) + width / 2;
+    DrawLine(PixelBuffer, {actual_x, (height / 2) - 1},
+             {actual_x, (height / 2) + 2}, 0xFFFFFFFF);
+  }
+
+  int min_y = (-height / 2) / unit_width;
+  int max_y = (height / 2) / unit_width;
+  for (int y = min_y; y <= max_y; y++) {
+    int actual_y = (y * unit_width) + height / 2;
+    DrawLine(PixelBuffer, {(width / 2) - 1, actual_y},
+             {(width / 2) + 2, actual_y}, 0xFFFFFFFF);
+  }
+
+  // Draw the graph
+  int prev_y_pixel = -1;
+  for (int x_pixel = 0; x_pixel <= width; x_pixel++) {
+    r32 x = (r32)min_x + (r32)x_pixel / (r32)unit_width;
+    r32 y = func(x);
+    int y_pixel = (int)(y * unit_width) + height / 2;
+    if (x_pixel > 0) {
+      DrawLine(PixelBuffer, {x_pixel, prev_y_pixel}, {x_pixel, y_pixel}, 0xFF33FFAA);
+    } else {
+      DrawPixel(PixelBuffer, x_pixel, y_pixel, 0xFF33FFAA);
+    }
+    prev_y_pixel = y_pixel;
   }
 
   return result;

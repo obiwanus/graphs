@@ -1,6 +1,6 @@
 @echo off
 
-pushd w:\editor
+pushd w:\graphs
 
 set CommonCompilerFlags= -DLL -MTd -nologo -Gm- -GR- -EHa- -Od -Oi -WX -W4 -wd4127 -wd4201 -wd4100 -wd4189 -wd4505 -wd4706 -DBUILD_INTERNAL=1 -DBUILD_SLOW=1 -DBUILD_WIN32=1 -D_CRT_SECURE_NO_WARNINGS -FC -Z7 -Fm
 set CommonLinkerFlags= -incremental:no -opt:ref winmm.lib user32.lib gdi32.lib opengl32.lib
@@ -17,7 +17,7 @@ pushd build
 
 set FilesToCompile= ..\base\win32.cpp ..\base\core.cpp
 
-cl -Feeditor.exe %CommonCompilerFlags% %FilesToCompile% /link %CommonLinkerFlags%
+cl -Fegraphs.exe %CommonCompilerFlags% %FilesToCompile% /link %CommonLinkerFlags%
 
 popd
 popd
