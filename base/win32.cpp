@@ -11,6 +11,7 @@
 global bool gRunning;
 
 global pixel_buffer gPixelBuffer;
+global board_state gBoardState;
 global GLuint gTextureHandle;
 
 static void Win32UpdateWindow(HDC hdc) {
@@ -214,6 +215,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
       }
 
+      gBoardState.unit_width = 20;
+      gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
+
       // Event loop
       while (gRunning) {
         // Process messages
@@ -249,8 +253,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
           }
         }
 
-        // TODO: create and pass global memory
-        UpdateAndRender(&gPixelBuffer);
+        UpdateAndRender(&gPixelBuffer, &gBoardState);
 
         Win32UpdateWindow(hdc);
       }
