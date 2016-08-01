@@ -5,6 +5,7 @@
 #include "core.h"
 
 #include <windows.h>
+#include <windowsX.h>
 #include <intrin.h>
 #include <gl/gl.h>
 
@@ -218,6 +219,11 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       gBoardState.unit_width = 20;
       gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
 
+      // TODO:
+      // 1. Change origin by click (done)
+      // 2. Change origin by drag
+      // 3. Change zoom by scroll
+
       // Event loop
       while (gRunning) {
         // Process messages
@@ -245,6 +251,12 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
                 gRunning = false;
               }
             } break;
+
+            case WM_LBUTTONDOWN: {
+              gBoardState.origin.x = GET_X_LPARAM(Message.lParam);
+              gBoardState.origin.y =
+                  gPixelBuffer.height - GET_Y_LPARAM(Message.lParam);
+            }
 
             default: {
               TranslateMessage(&Message);
