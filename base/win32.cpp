@@ -220,7 +220,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
 
       // TODO:
-      // 1. Change origin by click (done)
       // 2. Change origin by drag
       // 3. Change zoom by scroll
 
