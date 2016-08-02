@@ -17,7 +17,9 @@ pushd build
 
 set FilesToCompile= ..\base\win32.cpp ..\base\core.cpp
 
-cl -Fegraphs.exe %CommonCompilerFlags% %FilesToCompile% /link %CommonLinkerFlags%
+rem cl -Fegraphs.exe %CommonCompilerFlags% %FilesToCompile% /link %CommonLinkerFlags%
+
+nvcc.exe cuda.cu
 
 popd
 popd
