@@ -19,7 +19,7 @@ set FilesToCompile= ..\base\win32.cpp ..\base\core.cpp
 
 rem cl -Fegraphs.exe %CommonCompilerFlags% %FilesToCompile% /link %CommonLinkerFlags%
 
-nvcc.exe cuda.cu
+nvcc ..\cuda.cu
 
 popd
 popd
