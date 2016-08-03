@@ -270,7 +270,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
             case WM_MOUSEWHEEL: {
               int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam);
-              gBoardState.unit_width += delta / WHEEL_DELTA;
+              int quantifier = 1;
+              if (gBoardState.unit_width > 10) {
+                quantifier = 3;
+              }
+              if (gBoardState.unit_width > 20) {
+                quantifier = 6;
+              }
+              gBoardState.unit_width += (delta / WHEEL_DELTA) * quantifier;
               if (gBoardState.unit_width <= 1) {
                 gBoardState.unit_width = 1;
               }
