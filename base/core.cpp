@@ -48,8 +48,8 @@ void DrawLine(pixel_buffer *PixelBuffer, v2i A, v2i B, u32 Color) {
   }
 }
 
-// r32 func(r32 x) { return (r32)(12 * sin(x / 2)); }
-r32 func(r32 x) { return 0.5f * x * x; }
+r32 func(r32 x) { return (r32)(12 * sin(x / 2)); }
+// r32 func(r32 x) { return 0.5f * x * x; }
 
 update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State) {
   update_result result = {};

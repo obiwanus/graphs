@@ -8,6 +8,16 @@ struct v2i {
   int y;
 };
 
+inline v2i operator-(v2i A, v2i B) {
+  v2i result = {A.x - B.x, A.y - B.y};
+  return result;
+}
+
+inline v2i operator+(v2i A, v2i B) {
+  v2i result = {A.x + B.x, A.y + B.y};
+  return result;
+}
+
 struct v3f {
   r32 x;
   r32 y;

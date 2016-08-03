@@ -223,6 +223,9 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       // 2. Change origin by drag
       // 3. Change zoom by scroll
 
+      v2i saved_position = gBoardState.origin;
+      v2i saved_origin = gBoardState.origin;
+
       // Event loop
       while (gRunning) {
         // Process messages
@@ -251,11 +254,21 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
               }
             } break;
 
-            case WM_LBUTTONDOWN: {
-              gBoardState.origin.x = GET_X_LPARAM(Message.lParam);
-              gBoardState.origin.y =
-                  gPixelBuffer.height - GET_Y_LPARAM(Message.lParam);
-            }
+            case WM_MOUSEMOVE: {
+              bool LeftButtonIsDown = ((Message.wParam & MK_LBUTTON) != 0);
+              v2i position = {GET_X_LPARAM(Message.lParam),
+                              GET_Y_LPARAM(Message.lParam)};
+              if (LeftButtonIsDown) {
+                v2i delta = position - saved_position;
+                delta.y = -delta.y;
+                gBoardState.origin = saved_origin + delta;
+              } else {
+                // Remember position
+                saved_position = position;
+                saved_origin = gBoardState.origin;
+              }
+            } break;
+
 
             default: {
               TranslateMessage(&Message);
