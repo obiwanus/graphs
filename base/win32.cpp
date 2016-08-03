@@ -220,7 +220,6 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
 
       // TODO:
-      // 2. Change origin by drag
       // 3. Change zoom by scroll
 
       v2i saved_position = gBoardState.origin;
@@ -269,6 +268,13 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
               }
             } break;
 
+            case WM_MOUSEWHEEL: {
+              int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam);
+              gBoardState.unit_width += delta / WHEEL_DELTA;
+              if (gBoardState.unit_width <= 1) {
+                gBoardState.unit_width = 1;
+              }
+            } break;
 
             default: {
               TranslateMessage(&Message);
