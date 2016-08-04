@@ -216,11 +216,16 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
         }
       }
 
+      // TODO:
+      // * Zoom, the right way
+      // * Touch move
+      // * Painting:
+      //    - block (no antialiasing)
+      //    - brush (antialiasing)
+      //    - curves (aligned)
+
       gBoardState.unit_width = 20;
       gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
-
-      // TODO:
-      // 3. Change zoom by scroll
 
       v2i saved_position = gBoardState.origin;
       v2i saved_origin = gBoardState.origin;
@@ -269,15 +274,8 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             } break;
 
             case WM_MOUSEWHEEL: {
-              int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam);
-              int quantifier = 1;
-              if (gBoardState.unit_width > 10) {
-                quantifier = 3;
-              }
-              if (gBoardState.unit_width > 20) {
-                quantifier = 6;
-              }
-              gBoardState.unit_width += (delta / WHEEL_DELTA) * quantifier;
+              int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam) / WHEEL_DELTA;
+              gBoardState.unit_width += delta;
               if (gBoardState.unit_width <= 1) {
                 gBoardState.unit_width = 1;
               }

@@ -18,11 +18,6 @@ inline v2i operator+(v2i A, v2i B) {
   return result;
 }
 
-struct v3f {
-  r32 x;
-  r32 y;
-  r32 z;
-};
 
 struct pixel_buffer {
   int width;

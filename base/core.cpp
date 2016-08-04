@@ -74,7 +74,7 @@ update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State) {
     int y_pixel = (int)(y * unit_width) + State->origin.y;
     if (x_pixel >= 0 && x_pixel <= width && y_pixel >= 0 && y_pixel <= height) {
       DrawLine(PixelBuffer, {x_pixel, y_pixel}, {x_pixel, y_pixel_prev},
-               0xFF55DD99);
+               0xFFFFDD99);
     }
     y_pixel_prev = y_pixel;
   }
