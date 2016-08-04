@@ -42,4 +42,16 @@ union v3 {
   r32 E[3];
 };
 
+// TODO:
+
+// (1 0 0)
+// (0 1 0)
+// (0 0 1)
+// Find a way to compute graph values out of pixels
+// using that matrix (not necessarily nice)
+
+// * Add a matrix struct and operations
+// * Take 1 as unit width
+
+
 #endif  // GRAPHS_MATH_H
