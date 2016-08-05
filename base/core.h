@@ -2,6 +2,7 @@
 #define GRAPHS_CORE_H
 
 #include "base.h"
+#include "graphs_math.h"
 
 struct v2i {
   int x;
@@ -32,10 +33,12 @@ struct update_result {
 };
 
 struct board_state {
-  int unit_width;
-  v2i origin;
+  v2 origin;
+  m3x3 transform_matrix;
 };
 
 update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State);
+void AdjustShiftComponent(m3x3 *Matrix, v2 delta);
+void AdjustScaleFactor(m3x3 *Matrix, r32 Value);
 
 #endif  // GRAPHS_CORE_H

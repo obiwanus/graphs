@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "graphs_math.h"
 #include "base.h"
 #include "core.h"
 
@@ -224,11 +225,14 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
       //    - brush (antialiasing)
       //    - curves (aligned)
 
-      gBoardState.unit_width = 20;
-      gBoardState.origin = {gPixelBuffer.width / 4, gPixelBuffer.height / 4};
+      gBoardState.origin = V2i(gPixelBuffer.width / 4, gPixelBuffer.height / 4);
+      gBoardState.transform_matrix = {
+        1.0f, 0, 0,
+        0, 1.0f, 0,
+        0, 0, 1.0f,
+      };
 
-      v2i saved_position = gBoardState.origin;
-      v2i saved_origin = gBoardState.origin;
+      v2 saved_position = gBoardState.origin;
 
       // Event loop
       while (gRunning) {
@@ -260,25 +264,29 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
             case WM_MOUSEMOVE: {
               bool LeftButtonIsDown = ((Message.wParam & MK_LBUTTON) != 0);
-              v2i position = {GET_X_LPARAM(Message.lParam),
-                              GET_Y_LPARAM(Message.lParam)};
+              v2 position = V2i(GET_X_LPARAM(Message.lParam),
+                                GET_Y_LPARAM(Message.lParam));
               if (LeftButtonIsDown) {
-                v2i delta = position - saved_position;
+                v2 delta = position - saved_position;
                 delta.y = -delta.y;
-                gBoardState.origin = saved_origin + delta;
-              } else {
-                // Remember position
-                saved_position = position;
-                saved_origin = gBoardState.origin;
+
+                AdjustShiftComponent(&gBoardState.transform_matrix, delta);
               }
+              saved_position = position;
             } break;
 
             case WM_MOUSEWHEEL: {
-              int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam) / WHEEL_DELTA;
-              gBoardState.unit_width += delta;
-              if (gBoardState.unit_width <= 1) {
-                gBoardState.unit_width = 1;
-              }
+              int delta = -GET_WHEEL_DELTA_WPARAM(Message.wParam) / WHEEL_DELTA;
+
+
+
+              // TODO: Find out how much to shift when you scale
+              // in order to stay at the same point
+
+
+
+              AdjustScaleFactor(&gBoardState.transform_matrix, (r32)delta * 0.1f);
+              AdjustShiftComponent(&gBoardState.transform_matrix, (r32)delta * V2i(1, 1));
             } break;
 
             default: {
