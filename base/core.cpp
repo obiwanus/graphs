@@ -54,8 +54,14 @@ void DrawLine(pixel_buffer *PixelBuffer, v2i A, v2i B, u32 Color) {
 static r32 func(r32 x) { return (r32)(12 * sin(x / 2)); }
 // r32 func(r32 x) { return 0.5f * x * x; }
 
-inline r32 GetScaleFactor(m3x3 Matrix) {
-  return Matrix.rows[0].x;
+r32 GetScaleFactor(m3x3 Matrix) { return Matrix.rows[0].x; }
+
+void SetScaleFactor(m3x3 *Matrix, r32 S) {
+  if (S < 1) {
+    S = 1;
+  }
+  Matrix->e[0] = S;
+  Matrix->e[4] = S;
 }
 
 void AdjustScaleFactor(m3x3 *Matrix, r32 Value) {
@@ -83,7 +89,8 @@ v2 Transform(m3x3 Matrix, v2 Vector) {
   return result;
 }
 
-update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State) {
+update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State,
+                              user_input Input) {
   update_result result = {};
 
   int width = PixelBuffer->width;
@@ -98,8 +105,7 @@ update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State) {
   // Draw axis
   DrawLine(PixelBuffer, {(int)origin.x, 0}, {(int)origin.x, height},
            0xFFFFFFFF);
-  DrawLine(PixelBuffer, {0, (int)origin.y}, {width, (int)origin.y},
-           0xFFFFFFFF);
+  DrawLine(PixelBuffer, {0, (int)origin.y}, {width, (int)origin.y}, 0xFFFFFFFF);
 
   // Draw graph
   int y_pixel_prev = 0;

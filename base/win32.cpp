@@ -227,15 +227,15 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
       gBoardState.origin = V2i(gPixelBuffer.width / 4, gPixelBuffer.height / 4);
       gBoardState.transform_matrix = {
-        1.0f, 0, 0,
-        0, 1.0f, 0,
-        0, 0, 1.0f,
+          1.0f, 0, 0, 0, 1.0f, 0, 0, 0, 1.0f,
       };
 
       v2 saved_position = gBoardState.origin;
 
       // Event loop
       while (gRunning) {
+        user_input input = {};
+
         // Process messages
         MSG Message;
         while (PeekMessage(&Message, 0, 0, 0, PM_REMOVE)) {
@@ -276,17 +276,25 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
             } break;
 
             case WM_MOUSEWHEEL: {
-              int delta = -GET_WHEEL_DELTA_WPARAM(Message.wParam) / WHEEL_DELTA;
+              v2 position = V2i(GET_X_LPARAM(Message.lParam),
+                                GET_Y_LPARAM(Message.lParam));
 
+              r32 unit_width = GetScaleFactor(gBoardState.transform_matrix);
+              v2 origin =
+                  Transform(gBoardState.transform_matrix, gBoardState.origin);
 
+              // Move to origin
+              position.x = position.x - origin.x;
+              position.y = position.y - origin.y;
 
-              // TODO: Find out how much to shift when you scale
-              // in order to stay at the same point
+              int delta = GET_WHEEL_DELTA_WPARAM(Message.wParam) / WHEEL_DELTA;
+              r32 scale_factor = GetScaleFactor(gBoardState.transform_matrix);
+              scale_factor += (r32)delta * 0.1f;
+              SetScaleFactor(&gBoardState.transform_matrix, scale_factor);
 
-
-
-              AdjustScaleFactor(&gBoardState.transform_matrix, (r32)delta * 0.1f);
-              AdjustShiftComponent(&gBoardState.transform_matrix, (r32)delta * V2i(1, 1));
+              v2 shift = {position.x * (r32)delta * 0.1f,
+                          position.y * (r32)delta * 0.1f};
+              AdjustShiftComponent(&gBoardState.transform_matrix, shift);
             } break;
 
             default: {
@@ -296,7 +304,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
           }
         }
 
-        UpdateAndRender(&gPixelBuffer, &gBoardState);
+        UpdateAndRender(&gPixelBuffer, &gBoardState, input);
 
         Win32UpdateWindow(hdc);
       }

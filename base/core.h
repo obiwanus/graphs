@@ -37,8 +37,15 @@ struct board_state {
   m3x3 transform_matrix;
 };
 
-update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State);
+struct user_input {
+
+};
+
+update_result UpdateAndRender(pixel_buffer *PixelBuffer, board_state *State,
+                              user_input Input);
 void AdjustShiftComponent(m3x3 *Matrix, v2 delta);
-void AdjustScaleFactor(m3x3 *Matrix, r32 Value);
+r32 GetScaleFactor(m3x3 Matrix);
+void SetScaleFactor(m3x3 *Matrix, r32 S);
+v2 Transform(m3x3 Matrix, v2 Vector);
 
 #endif  // GRAPHS_CORE_H
